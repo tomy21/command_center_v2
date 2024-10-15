@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { getTransaction } from "../../api/apiOcc";
 import Pagination from "../Pagging";
-import { MdOutlineAddLocationAlt, MdOutlineFileDownload } from "react-icons/md";
+import {
+  MdOutlineAddLocationAlt,
+  MdOutlineEditNote,
+  MdOutlineFileDownload,
+} from "react-icons/md";
 import { Category, ObjectApi } from "../../api/apiMaster";
 import moment from "moment/moment";
+import { BsFillTrash3Fill } from "react-icons/bs";
 
 export default function TableObject() {
   const [objects, setoObjects] = useState([]);
@@ -75,7 +80,7 @@ export default function TableObject() {
               <th className="text-start py-2 px-4 border-b text-slate-400 text-sm font-medium w-[5%]">
                 No
               </th>
-              <th className="text-start py-2 px-4 border-b text-slate-400 text-sm font-medium w-[55%]">
+              <th className="text-start py-2 px-4 border-b text-slate-400 text-sm font-medium w-[50%]">
                 Name
               </th>
               <th className="text-start py-2 px-4 border-b text-slate-400 text-sm font-medium w-[20%]">
@@ -84,6 +89,7 @@ export default function TableObject() {
               <th className="text-start py-2 px-4 border-b text-slate-400 text-sm font-medium w-[30%]">
                 Created Date
               </th>
+              <th className="text-start py-2 px-4 border-b text-slate-400 text-sm font-medium w-[30%]"></th>
             </tr>
           </thead>
           <tbody>
@@ -103,6 +109,19 @@ export default function TableObject() {
                 </td>
                 <td className="text-start text-sm py-2 px-4 border-b border-gray-200">
                   {moment(items.createdAt).format("DD MMM YYYY, HH:mm")}
+                </td>
+                <td className="text-start text-sm py-2 px-4 border-b border-gray-200">
+                  <div className="flex flex-row justify-center items-center space-x-3">
+                    <MdOutlineEditNote
+                      size={25}
+                      className="text-sky-600 hover:text-sky-500"
+                    />
+                    <div className="border-l border-slate-500 h-5"></div>
+                    <BsFillTrash3Fill
+                      size={20}
+                      className="text-red-600 hover:text-red-500"
+                    />
+                  </div>
                 </td>
               </tr>
             ))}

@@ -2,7 +2,7 @@ version: '3'
 
 services:
   app:
-    container_name: 'Frontend_dump'
+    container_name: 'command_center'
     build: 
       context: .
       dockerfile: ./Dockerfile

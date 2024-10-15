@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { getTransaction } from "../../api/apiOcc";
 import Pagination from "../Pagging";
-import { MdOutlineAddLocationAlt, MdOutlineFileDownload } from "react-icons/md";
+import {
+  MdOutlineAddLocationAlt,
+  MdOutlineEditNote,
+  MdOutlineFileDownload,
+} from "react-icons/md";
 import { Category } from "../../api/apiMaster";
 import moment from "moment/moment";
+import { BsFillTrash3Fill } from "react-icons/bs";
 
 export default function TableCategory() {
   const [category, setCategory] = useState([]);
@@ -12,11 +17,34 @@ export default function TableCategory() {
   const [totalPages, setTotalPages] = useState(1);
   const [limit, setLimit] = useState(10);
   const [totalResult, setTotalResult] = useState(10);
-  const [loadingGateId, setLoadingGateId] = useState(null);
-  const [loadingPostId, setLoadingPostId] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null); // To store the category being edited
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handleEdit = (category) => {
+    setSelectedCategory(category); // Set the selected category to edit
+    setShowEditModal(true); // Show the edit modal
+  };
+
+  const handleConfirmationDelete = (category) => {
+    setSelectedCategory(category); // Set the selected category to delete
+    setShowDeleteModal(true); // Show the delete confirmation modal
+  };
+
+  const handleDelete = async () => {
+    try {
+      await Category.delete(selectedCategory.id); // Assuming the delete API is available
+      setCategory((prev) =>
+        prev.filter((item) => item.id !== selectedCategory.id)
+      );
+      setShowDeleteModal(false);
+    } catch (error) {
+      console.error("Error deleting category:", error);
+    }
   };
 
   // Pagination handler
@@ -27,7 +55,6 @@ export default function TableCategory() {
   const fetchGates = async (page = 1, search = "") => {
     try {
       const response = await Category.getAll(currentPage, limit, searchTerm);
-      console.log(response);
       setCategory(response.categories);
       setCurrentPage(parseInt(response.currentPage));
       setTotalPages(response.totalPages);
@@ -81,6 +108,7 @@ export default function TableCategory() {
               <th className="text-start py-2 px-4 border-b text-slate-400 text-sm font-medium">
                 Created Date
               </th>
+              <th className="text-start py-2 px-4 border-b text-slate-400 text-sm font-medium"></th>
             </tr>
           </thead>
           <tbody>
@@ -97,6 +125,21 @@ export default function TableCategory() {
                 </td>
                 <td className="text-start text-sm py-2 px-4 border-b border-gray-200">
                   {moment(items.createdAt).format("DD MMM YYYY, HH:mm")}
+                </td>
+                <td className="text-start text-sm py-2 px-4 border-b border-gray-200">
+                  <div className="flex flex-row justify-center items-center space-x-3">
+                    <MdOutlineEditNote
+                      size={25}
+                      className="text-sky-600 hover:text-sky-500 cursor-pointer"
+                      onClick={() => handleEdit(items)} // Handle edit click
+                    />
+                    <div className="border-l border-slate-500 h-5"></div>
+                    <BsFillTrash3Fill
+                      size={20}
+                      className="text-red-600 hover:text-red-500 cursor-pointer"
+                      onClick={() => handleConfirmationDelete(items)} // Handle delete click
+                    />
+                  </div>
                 </td>
               </tr>
             ))}
@@ -137,6 +180,70 @@ export default function TableCategory() {
           </div>
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-md p-6 w-full max-w-md shadow-lg">
+            <h2 className="text-xl font-bold mb-4">Edit Category</h2>
+            <input
+              type="text"
+              value={selectedCategory?.category || ""}
+              onChange={(e) =>
+                setSelectedCategory({
+                  ...selectedCategory,
+                  category: e.target.value,
+                })
+              }
+              className="w-full p-2 border rounded-md mb-4"
+              placeholder="Enter category name"
+            />
+            <div className="flex justify-end space-x-2">
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                onClick={() => setShowEditModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                onClick={() => {
+                  // Implement save changes logic
+                  setShowEditModal(false);
+                }}
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-md p-6 w-full max-w-md shadow-lg">
+            <h2 className="text-xl font-bold mb-4 text-red-600">
+              Delete Confirmation
+            </h2>
+            <p>Are you sure you want to delete this category?</p>
+            <div className="flex justify-end space-x-2 mt-4">
+              <button
+                className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                onClick={() => setShowDeleteModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                onClick={handleDelete}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

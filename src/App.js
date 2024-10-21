@@ -9,6 +9,7 @@ import Description from "./pages/Description";
 import Lokasi from "./pages/Lokasi";
 import { WebSocketProvider } from "./components/WebSocketProvider";
 import ProtectAuth from "./components/ProtectAuth";
+import Activity from "./pages/Activity";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
               <Route path="master/category" element={<Category />} />
               <Route path="master/object" element={<Description />} />
               <Route path="lokasi" element={<Lokasi />} />
+              <Route path="activity" element={<Activity />} />
             </Route>
           </Routes>
         </Router>

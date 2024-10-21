@@ -13,6 +13,7 @@ import {
 import { users } from "../api/apiOcc";
 import Loading from "./Loading";
 import { IoIosBookmark } from "react-icons/io";
+import { PiReadCvLogoBold } from "react-icons/pi";
 
 const Sidebar = ({ isOpen }) => {
   const [isMasterOpen, setIsMasterOpen] = useState(false);
@@ -131,6 +132,16 @@ const Sidebar = ({ isOpen }) => {
               }`}
             >
               <MdLocationPin className="mr-2" /> Lokasi
+            </Link>
+          </li>
+          <li className="mb-4">
+            <Link
+              to="/dashboard/activity"
+              className={`flex items-center px-4 py-2 hover:bg-blue-700 rounded ${
+                location.pathname === "/dashboard/activity" ? "bg-blue-700" : ""
+              }`}
+            >
+              <PiReadCvLogoBold className="mr-2" /> Activity
             </Link>
           </li>
           <li className="mb-4">

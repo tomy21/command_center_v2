@@ -124,3 +124,20 @@ export const Issues = {
     }
   },
 };
+
+export const loging = {
+  getAll: async (page, limit) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/occ/api/logs/getAll?search=OPEN_GATE`,
+        {
+          params: { page, limit },
+        }
+      );
+      // console.log(response);
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};

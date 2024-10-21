@@ -5,7 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import DashboardLayout from "./layout/DashboardLayout";
 import Ticket from "./pages/Ticket";
 import Category from "./pages/Category";
-import Object from "./pages/Object";
+import Description from "./pages/Description";
 import Lokasi from "./pages/Lokasi";
 import { WebSocketProvider } from "./components/WebSocketProvider";
 import ProtectAuth from "./components/ProtectAuth";
@@ -28,7 +28,7 @@ function App() {
               <Route path="" element={<Dashboard />} />
               <Route path="ticket" element={<Ticket />} />
               <Route path="master/category" element={<Category />} />
-              <Route path="master/object" element={<Object />} />
+              <Route path="master/object" element={<Description />} />
               <Route path="lokasi" element={<Lokasi />} />
             </Route>
           </Routes>

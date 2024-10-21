@@ -3,27 +3,57 @@ import Sidebar from "../components/Sidebar";
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { WebSocketContext } from "../components/WebSocketProvider";
-import { getTransaction } from "../api/apiOcc";
-import { Category } from "../api/apiMaster";
+import { getTransaction, Issues } from "../api/apiOcc";
+import { Category, ObjectApi } from "../api/apiMaster"; // Import Issues
 
 export default function DashboardLayout() {
   const { message, isOpen, closePopup } = useContext(WebSocketContext);
+  const [formData, setFormData] = useState({
+    idLocation: "",
+    category: "",
+    description: "",
+    gate: "",
+    action: "",
+    foto: "",
+    number_plate: "B123ABN",
+    TrxNo: "TRX0001",
+    status: "",
+  });
   const [imageSrc, setImageSrc] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [description, setDescription] = useState([]);
   const [limitCategory, setLimitCategory] = useState(3);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [dropdownVisible, setDropdownVisible] = useState(false); // State for dropdown visibility
+  const [dropdownVisible, setDropdownVisible] = useState(false);
   const categoryListRef = useRef(null);
 
-  const handleSubmit = (event) => {
+  // Handle input changes
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value, // Dynamically update form data based on input name
+    }));
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const complaint = event.target.complaint.value;
-    console.log("Complaint submitted:", complaint);
-    closePopup();
+    try {
+      // Submit form data to the API
+      const response = await Issues.create(formData);
+      console.log("Complaint submitted:", response);
+
+      // Handle successful submission (e.g., show a success message, close the popup)
+      closePopup();
+    } catch (error) {
+      console.error("Error submitting complaint:", error);
+      // Handle error (e.g., show an error message)
+    }
   };
 
   useEffect(() => {
@@ -49,11 +79,19 @@ export default function DashboardLayout() {
   }, [message?.data?.channel_cctv, search]);
 
   const fetchCategories = async () => {
-    if (loading) return; // Prevent multiple fetches
+    if (loading) return;
     setLoading(true);
     try {
       const response = await Category.getAll(page, limitCategory, search);
-      setCategories((prev) => [...prev, ...response.categories]);
+
+      setCategories((prev) => {
+        const categorySet = new Set(prev.map((cat) => cat.id)); // Membuat Set dengan ID kategori sebelumnya
+        const newCategories = response.categories.filter(
+          (newCategory) => !categorySet.has(newCategory.id) // Memastikan ID kategori baru tidak ada dalam Set
+        );
+        return [...prev, ...newCategories];
+      });
+
       setPage((prev) => prev + 1);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -62,34 +100,40 @@ export default function DashboardLayout() {
     }
   };
 
-  const observer = useRef();
-  const lastCategoryElementRef = useRef();
-
+  // Fetch objects by selected category ID
   useEffect(() => {
-    if (observer.current) observer.current.disconnect();
-    const callback = (entries) => {
-      if (entries[0].isIntersecting) {
-        fetchCategories();
-      }
-    };
-    observer.current = new IntersectionObserver(callback);
-    if (lastCategoryElementRef.current) {
-      observer.current.observe(lastCategoryElementRef.current);
+    if (selectedCategoryId) {
+      const fetchDataByCategory = async () => {
+        try {
+          const response = await ObjectApi.getByIdCategory(selectedCategoryId);
+          setDescription(response.data);
+          console.log("Data berdasarkan kategori:", response);
+        } catch (error) {
+          console.error("Error fetching data by category:", error);
+        }
+      };
+
+      fetchDataByCategory();
     }
-  }, [lastCategoryElementRef.current]);
+  }, [selectedCategoryId]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
   const toggleDropdown = () => {
-    setDropdownVisible((prev) => !prev); // Toggle dropdown visibility
+    setDropdownVisible((prev) => !prev);
   };
 
   const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
-    setSearch(""); // Clear the search input
-    setDropdownVisible(false); // Hide dropdown on selection
+    setSelectedCategory(category.category);
+    setFormData((prevData) => ({
+      ...prevData,
+      category: category.category, // Update formData with selected category
+    }));
+    setSelectedCategoryId(category.id);
+    setSearch("");
+    setDropdownVisible(false);
   };
 
   return (
@@ -122,9 +166,7 @@ export default function DashboardLayout() {
                     </p>
                     <h1 className="text-xl font-bold">{message?.data?.gate}</h1>
                   </div>
-                  <button onClick={closePopup} className="">
-                    X
-                  </button>
+                  <button onClick={closePopup}>X</button>
                 </div>
                 <div className="border-b border-slate-300 w-full p-0"></div>
                 <div className="flex justify-center">
@@ -143,31 +185,15 @@ export default function DashboardLayout() {
                     <label className="block text-sm font-medium text-gray-700">
                       Plate Number
                     </label>
-                    <h1 className="text-xl font-bold mb-2">{`B123ABC`}</h1>
+                    <h1 className="text-xl font-bold mb-2">
+                      {formData.number_plate}
+                    </h1>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
                       Transaction Number
                     </label>
-                    <p className="mb-2">{`Ghasdasdasdasd`}</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 text-start px-4 py-2">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Status
-                    </label>
-                    <div className="text-green-600">
-                      <h1 className="text-base font-bold mb-2">Paid</h1>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      In Date
-                    </label>
-                    <p className="mb-2">{new Date().toLocaleString()}</p>
+                    <p className="mb-2">{formData.TrxNo}</p>
                   </div>
                 </div>
 
@@ -185,16 +211,16 @@ export default function DashboardLayout() {
                           type="text"
                           placeholder="Search category..."
                           value={selectedCategory}
-                          onClick={toggleDropdown} // Show dropdown on click
+                          onClick={toggleDropdown}
                           onChange={(e) => {
                             setSearch(e.target.value);
-                            setCategories([]); // Clear categories on search
-                            setPage(1); // Reset page for new search
-                            toggleDropdown(); // Show dropdown on search
+                            setCategories([]);
+                            setPage(1);
+                            toggleDropdown();
                           }}
                           className="mt-1 p-2 w-full border rounded-md"
                         />
-                        {dropdownVisible && ( // Only show dropdown if visible
+                        {dropdownVisible && (
                           <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-60 overflow-y-auto">
                             {categories
                               .filter((item) =>
@@ -203,19 +229,10 @@ export default function DashboardLayout() {
                                   .includes(search.toLowerCase())
                               )
                               .map((item, index) => {
-                                const isLastElement =
-                                  index === categories.length - 1; // Check if it's the last element
                                 return (
                                   <li
                                     key={item.id}
-                                    ref={
-                                      isLastElement
-                                        ? lastCategoryElementRef
-                                        : null
-                                    }
-                                    onClick={() =>
-                                      handleCategorySelect(item.category)
-                                    } // Handle category selection
+                                    onClick={() => handleCategorySelect(item)}
                                     className="p-2 hover:bg-gray-200 cursor-pointer"
                                   >
                                     {item.category}
@@ -224,8 +241,7 @@ export default function DashboardLayout() {
                               })}
                             {loading && (
                               <li className="p-2 text-center">Loading...</li>
-                            )}{" "}
-                            {/* Show loading text */}
+                            )}
                           </ul>
                         )}
                       </div>
@@ -241,15 +257,38 @@ export default function DashboardLayout() {
                       <select
                         id="object"
                         name="object"
+                        value={formData.object}
+                        onChange={handleInputChange}
                         className="mt-1 p-2 w-full border rounded-md"
                         required
                       >
                         <option value="">Select object</option>
-                        <option value="software">Software</option>
-                        <option value="hardware">Hardware</option>
-                        <option value="network">Network</option>
+                        {description.map((items, index) => (
+                          <option key={index} value={items.object}>
+                            {items.object}
+                          </option>
+                        ))}
                       </select>
                     </div>
+                  </div>
+
+                  <div className="mb-4">
+                    <label
+                      htmlFor="complaint"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Complaint Description
+                    </label>
+                    <textarea
+                      id="complaint"
+                      name="complaint"
+                      value={formData.complaint}
+                      onChange={handleInputChange}
+                      className="mt-1 p-2 w-full border rounded-md"
+                      rows="3"
+                      placeholder="Describe your complaint"
+                      required
+                    />
                   </div>
 
                   <button

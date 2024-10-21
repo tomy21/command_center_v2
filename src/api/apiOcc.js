@@ -110,4 +110,17 @@ export const Issues = {
       throw error.response.data;
     }
   },
+
+  create: async (formData) => {
+    try {
+      const response = await apiClient.post(
+        `/v01/occ/api/issues/create`,
+        formData
+      );
+      // console.log(response);
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
 };

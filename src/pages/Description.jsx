@@ -1,5 +1,5 @@
 import React from "react";
-import TableObject from "../components/table/TableObject";
+import TableDescription from "../components/table/TableDescription";
 
 export default function Object() {
   return (
@@ -10,7 +10,7 @@ export default function Object() {
           <div>2022 Jun 10</div>
         </div>
 
-        <TableObject />
+        <TableDescription />
       </div>
     </>
   );

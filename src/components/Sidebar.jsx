@@ -117,7 +117,7 @@ const Sidebar = ({ isOpen }) => {
                     }`}
                   >
                     <IoIosBookmark className="mr-2" />
-                    Object
+                    Description
                   </Link>
                 </li>
               </ul>

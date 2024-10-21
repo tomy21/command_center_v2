@@ -9,8 +9,8 @@ export const WebSocketProvider = ({ children }) => {
 
   useEffect(() => {
     // Buat koneksi ke server Socket.IO
-    const socket = io("http://localhost:5001"); // Ganti URL sesuai dengan backend
-    // const socket = io("https://ws-occ.skyparking.online");
+    // const socket = io("http://localhost:5001"); // Ganti URL sesuai dengan backend
+    const socket = io("https://ws-occ.skyparking.online");
 
     socket.emit("adminOnline");
 

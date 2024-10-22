@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Issues } from "../../api/apiOcc";
 import AddTicket from "../modal/AddTicket";
+import Pagination from "../Pagging";
 
 export default function TableTicketPages() {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -15,6 +16,10 @@ export default function TableTicketPages() {
     setIsModalVisible(true);
   };
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   const closeModal = () => {
     setIsModalVisible(false);
   };
@@ -26,39 +31,82 @@ export default function TableTicketPages() {
   const fetchData = async () => {
     try {
       const response = await Issues.getAll(currentPage, limit, searchTerm);
-      console.log(response.data);
+      console.log(response);
       setTickets(response.data);
+      setTotalPages(response.totalPages);
+      setTotalResult(response.totalItems);
     } catch (error) {
       console.log(error);
     }
   };
   return (
-    <div className="w-full mt-2 px-3 py-1">
-      <table className="table table-zebra table-xs table-pin-rows table-pin-cols text-xs cursor-pointer w-full">
+    <div className="bg-white rounded-md shadow-md w-full">
+      <table className="w-full bg-white rounded-md">
         <thead>
-          <tr className="font-semibold p-2">
-            <th className="bg-blue-100 px-2 py-5 rounded-tl-xl">No</th>
-            <th className="bg-blue-100 px-2 py-5">No Ticket</th>
-            <th className="bg-blue-100 px-2 py-5">Lokasi</th>
-            <th className="bg-blue-100 px-2 py-5">Kategory</th>
-            <th className="bg-blue-100 px-2 py-5">Deskripsi</th>
-            <th className="bg-blue-100 px-2 py-5">No Kendaraan</th>
-            <th className="bg-blue-100 px-2 py-5">Di Input oleh</th>
-            <th className="bg-blue-100 px-2 py-5 rounded-tr-xl">Status</th>
+          <tr className="">
+            <th className="text-start py-2 px-4 border-b text-slate-400 text-sm font-medium">
+              No
+            </th>
+            <th className="text-start py-2 px-4 border-b text-slate-400 text-sm font-medium">
+              No Ticket
+            </th>
+            <th className="text-start py-2 px-4 border-b text-slate-400 text-sm font-medium">
+              Lokasi
+            </th>
+            <th className="text-start py-2 px-4 border-b text-slate-400 text-sm font-medium">
+              Kategory
+            </th>
+            <th className="text-start py-2 px-4 border-b text-slate-400 text-sm font-medium">
+              Deskripsi
+            </th>
+            <th className="text-start py-2 px-4 border-b text-slate-400 text-sm font-medium">
+              No Kendaraan
+            </th>
+            <th className="text-start py-2 px-4 border-b text-slate-400 text-sm font-medium">
+              Di Input oleh
+            </th>
+            <th className="text-start py-2 px-4 border-b text-slate-400 text-sm font-medium">
+              Status
+            </th>
           </tr>
         </thead>
         <tbody>
           {tickets?.map((data, index) => (
-            <tr key={index}>
-              <td className="py-2">{index + 1}</td>
-              <td className="py-2">#{data.ticket}</td>
-              <td className="py-2">{data.lokasi}</td>
-              <td className="py-2">{data.category}</td>
-              <td className="py-2">{data.description}</td>
-              <td className="py-2">{data.number_plate}</td>
-              <td className="py-2">{data.action}</td>
-              <td className="py-2">
-                <div className="bg-green-200 rounded-full px-2 py-3">
+            <tr
+              key={index}
+              className={index % 2 === 0 ? "bg-white" : "bg-gray-200"}
+            >
+              <td className="text-start text-sm py-2 px-4 border-b border-gray-200">
+                {index + 1}
+              </td>
+              <td className="text-start text-sm py-2 px-4 border-b border-gray-200">
+                #{data.ticket}
+              </td>
+              <td className="text-start text-sm py-2 px-4 border-b border-gray-200">
+                {data.lokasi}
+              </td>
+              <td className="text-start text-sm py-2 px-4 border-b border-gray-200">
+                {data.category}
+              </td>
+              <td className="text-start text-sm py-2 px-4 border-b border-gray-200">
+                {data.description}
+              </td>
+              <td className="text-start text-sm py-2 px-4 border-b border-gray-200">
+                {data.number_plate}
+              </td>
+              <td className="text-start text-sm py-2 px-4 border-b border-gray-200">
+                {data.createdBy}
+              </td>
+              <td className="text-start text-sm py-2 px-4 border-b border-gray-200">
+                <div
+                  className={`${
+                    data.status === "new"
+                      ? "text-blue-500"
+                      : data.status === "in progress"
+                      ? "text-amber-500"
+                      : "text-emerald-600"
+                  }`}
+                >
                   {data.status}
                 </div>
               </td>
@@ -66,6 +114,39 @@ export default function TableTicketPages() {
           ))}
         </tbody>
       </table>
+
+      <div className="flex justify-between items-center w-full px-4">
+        <div className="flex flex-row justify-start items-center space-x-2">
+          <p>
+            Result{" "}
+            <strong>
+              {currentPage} - {limit}
+            </strong>{" "}
+            of <strong>{totalResult}</strong>
+          </p>
+        </div>
+        <div className="flex flex-row justify-end items-center space-x-2">
+          <select
+            name="limit-selector"
+            id="limit-selector"
+            value={limit}
+            onChange={(event) => setLimit(event.target.value)}
+            className="border border-slate-300 px-2 py-1 rounded-md"
+          >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      </div>
 
       <AddTicket isVisible={isModalVisible} onClose={closeModal} />
     </div>

@@ -5,32 +5,28 @@ import Navbar from "../components/Navbar";
 import { WebSocketContext } from "../components/WebSocketProvider";
 import { getTransaction, Issues } from "../api/apiOcc";
 import { Category, ObjectApi } from "../api/apiMaster"; // Import Issues
+import { FaFileCircleCheck, FaFileCircleXmark } from "react-icons/fa6";
 
 export default function DashboardLayout() {
   const { message, isOpen, closePopup } = useContext(WebSocketContext);
   const [formData, setFormData] = useState({
-    idLocation: "",
     category: "",
     description: "",
-    gate: "",
-    action: "",
-    foto: "",
-    number_plate: "B123ABN",
-    TrxNo: "TRX0001",
     status: "",
   });
   const [imageSrc, setImageSrc] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [description, setDescription] = useState([]);
-  const [limitCategory, setLimitCategory] = useState(3);
+  const [limitCategory] = useState(3);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const categoryListRef = useRef(null);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   // Handle input changes
   const handleInputChange = (event) => {
@@ -43,18 +39,29 @@ export default function DashboardLayout() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
     try {
-      // Submit form data to the API
-      const response = await Issues.create(formData);
-      console.log("Complaint submitted:", response);
-
-      // Handle successful submission (e.g., show a success message, close the popup)
+      const Id = message?.data?.dataIssues?.data?.id;
+      await Issues.update(Id, formData);
       closePopup();
+      setFormData({
+        category: "",
+        description: "",
+        status: "",
+      });
     } catch (error) {
+      setIsError(true);
       console.error("Error submitting complaint:", error);
-      // Handle error (e.g., show an error message)
+    } finally {
+      setLoading(true);
+      setIsSuccess(true);
+      setInterval(() => {
+        setIsSuccess(false);
+      }, 2000);
     }
   };
+
+  console.log(selectedCategory);
 
   useEffect(() => {
     const fetchImageCCTV = async () => {
@@ -76,6 +83,7 @@ export default function DashboardLayout() {
 
     // Initial fetch of categories when the component mounts or when search changes
     fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [message?.data?.channel_cctv, search]);
 
   const fetchCategories = async () => {
@@ -162,9 +170,14 @@ export default function DashboardLayout() {
                 <div className="flex justify-between items-center px-4 py-3">
                   <div className="flex flex-col justify-start items-start">
                     <p className="text-slate-400">
-                      {message?.data?.location?.Name}
+                      {message?.data?.dataGate?.location?.Name}
                     </p>
-                    <h1 className="text-xl font-bold">{message?.data?.gate}</h1>
+                    <h1 className="text-xl font-bold">
+                      {message?.data?.dataGate?.gate}
+                    </h1>
+                    <h1 className="text-base font-medium text-slate-400">
+                      #{message?.data?.dataIssues?.data?.ticket}
+                    </h1>
                   </div>
                   <button onClick={closePopup}>X</button>
                 </div>
@@ -177,7 +190,7 @@ export default function DashboardLayout() {
                       className="w-60 h-auto py-4"
                     />
                   ) : (
-                    <p>Loading image...</p>
+                    <p></p>
                   )}
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-start px-4 py-2">
@@ -185,15 +198,15 @@ export default function DashboardLayout() {
                     <label className="block text-sm font-medium text-gray-700">
                       Plate Number
                     </label>
-                    <h1 className="text-xl font-bold mb-2">
-                      {formData.number_plate}
+                    <h1 className="text-xl font-medium mb-2">
+                      {formData.number_plate ?? "-"}
                     </h1>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
                       Transaction Number
                     </label>
-                    <p className="mb-2">{formData.TrxNo}</p>
+                    <p className="mb-2">{formData.TrxNo ?? "-"}</p>
                   </div>
                 </div>
 
@@ -249,20 +262,20 @@ export default function DashboardLayout() {
 
                     <div>
                       <label
-                        htmlFor="object"
+                        htmlFor="description"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        Object Complain:
+                        Description:
                       </label>
                       <select
-                        id="object"
-                        name="object"
-                        value={formData.object}
+                        id="description"
+                        name="description"
+                        value={formData.description}
                         onChange={handleInputChange}
                         className="mt-1 p-2 w-full border rounded-md"
                         required
                       >
-                        <option value="">Select object</option>
+                        <option value="">Select Description</option>
                         {description.map((items, index) => (
                           <option key={index} value={items.object}>
                             {items.object}
@@ -270,25 +283,34 @@ export default function DashboardLayout() {
                         ))}
                       </select>
                     </div>
-                  </div>
+                    <div>
+                      <label
+                        htmlFor="status"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Status:
+                      </label>
+                      <select
+                        id="status"
+                        name="status"
+                        value={formData.status}
+                        onChange={handleInputChange}
+                        className="mt-1 p-2 w-full border rounded-md"
+                        required
+                      >
+                        <option value="">Select status</option>
+                        <option value="in progress">In Progress</option>
+                        <option value="solved">Solved</option>
+                      </select>
+                    </div>
 
-                  <div className="mb-4">
-                    <label
-                      htmlFor="complaint"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Complaint Description
-                    </label>
-                    <textarea
-                      id="complaint"
-                      name="complaint"
-                      value={formData.complaint}
-                      onChange={handleInputChange}
-                      className="mt-1 p-2 w-full border rounded-md"
-                      rows="3"
-                      placeholder="Describe your complaint"
-                      required
-                    />
+                    {selectedCategory === "Assets" ? (
+                      <>
+                        <button className="bg-sky-300 rounded-md text-center">
+                          Open Gate
+                        </button>
+                      </>
+                    ) : null}
                   </div>
 
                   <button
@@ -302,6 +324,28 @@ export default function DashboardLayout() {
             </div>
           )}
         </>
+      )}
+
+      {isSuccess && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-md p-6 w-full max-w-md shadow-lg flex flex-col justify-center items-center space-y-10">
+            <FaFileCircleCheck className="text-green-500" size={80} />
+            <h2 className="text-xl font-medium mb-4 text-black">
+              Created successfully
+            </h2>
+          </div>
+        </div>
+      )}
+
+      {isError && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-md p-6 w-full max-w-md shadow-lg flex flex-col justify-center items-center space-y-10">
+            <FaFileCircleXmark className="text-red-500" size={80} />
+            <h2 className="text-xl font-medium mb-4 text-black">
+              Error submitting complaint
+            </h2>
+          </div>
+        </div>
       )}
     </>
   );

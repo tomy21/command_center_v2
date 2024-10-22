@@ -123,6 +123,19 @@ export const Issues = {
       throw error.response.data;
     }
   },
+
+  update: async (id, formData) => {
+    try {
+      const response = await apiClient.put(
+        `/v01/occ/api/issues/updated/${id}`,
+        formData
+      );
+      // console.log(response);
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
 };
 
 export const loging = {

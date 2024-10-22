@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AddTicket from "../modal/AddTicket.jsx";
 import { Issues } from "../../api/apiOcc.js";
+import Pagination from "../Pagging.jsx";
 
 export default function TableTicket() {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -13,6 +14,10 @@ export default function TableTicket() {
 
   const openModal = () => {
     setIsModalVisible(true);
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   const closeModal = () => {
@@ -84,6 +89,39 @@ export default function TableTicket() {
             ))}
           </tbody>
         </table>
+
+        <div className="flex justify-between items-center w-full px-4">
+          <div className="flex flex-row justify-start items-center space-x-2">
+            <p>
+              Result{" "}
+              <strong>
+                {currentPage} - {limit}
+              </strong>{" "}
+              of <strong>{totalResult}</strong>
+            </p>
+          </div>
+          <div className="flex flex-row justify-end items-center space-x-2">
+            <select
+              name="limit-selector"
+              id="limit-selector"
+              value={limit}
+              onChange={(event) => setLimit(event.target.value)}
+              className="border border-slate-300 px-2 py-1 rounded-md"
+            >
+              <option value="">{limit}</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="30">30</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        </div>
       </div>
 
       <AddTicket isVisible={isModalVisible} onClose={closeModal} />

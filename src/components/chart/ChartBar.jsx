@@ -1,11 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
+import { Category } from "../../api/apiMaster";
 
 const ChartBar = () => {
+  const [listCategory, setListCategory] = useState([]);
+  const [chartData, setChartData] = useState([]);
+
+  useEffect(() => {
+    fetchCategory();
+  }, []);
+
+  const fetchCategory = async () => {
+    try {
+      const response = await Category.getAll();
+      const categories = response.categories.map((item) => item.category);
+      console.log(categories);
+      setListCategory(categories);
+      setChartData(Array(categories.length).fill(100));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const [state, setState] = useState({
     series: [
       {
-        data: [800, 600, 400],
+        data: [800, 100, 300],
       },
     ],
     options: {
@@ -25,7 +45,7 @@ const ChartBar = () => {
         enabled: true,
       },
       xaxis: {
-        categories: ["Hardware", "Member", "Payment"],
+        categories: listCategory,
         axisBorder: {
           show: false,
         },
@@ -41,6 +61,25 @@ const ChartBar = () => {
       },
     },
   });
+
+  useEffect(() => {
+    // Update state saat kategori atau data berubah
+    setState((prevState) => ({
+      ...prevState,
+      series: [
+        {
+          data: chartData,
+        },
+      ],
+      options: {
+        ...prevState.options,
+        xaxis: {
+          ...prevState.options.xaxis,
+          categories: listCategory,
+        },
+      },
+    }));
+  }, [listCategory, chartData]);
 
   return (
     <div className="chart">

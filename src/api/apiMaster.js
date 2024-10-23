@@ -23,6 +23,32 @@ export const Category = {
       throw error.response.data;
     }
   },
+
+  summaryDataCategory: async (page, limit, search) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/occ/api/issues/getSummaryCategory`,
+        {
+          params: { page, limit, search },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  updateCategory: async (id, formData) => {
+    try {
+      const response = await apiClient.put(
+        `/v01/occ/api/getById/update/${id}`,
+        formData
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
 };
 
 export const ObjectApi = {

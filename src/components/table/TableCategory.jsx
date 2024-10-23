@@ -79,22 +79,22 @@ export default function TableCategory() {
   const submitForm = async () => {
     setLoading(true);
     try {
-      let response;
-      if (selectedCategory) {
-        // Jika ada selectedCategory, berarti sedang mengedit
-        response = await Category.update(selectedCategory.id, formData);
+      // Pastikan selectedCategory dan formData tidak null atau undefined
+      console.log(selectedCategory);
+      if (selectedCategory && formData && formData.id && formData.category) {
+        const response = await Category.updateCategory(
+          formData.id,
+          formData.category
+        );
       } else {
-        // Jika tidak ada selectedCategory, berarti menambah kategori baru
-        response = await Category.create(formData);
+        console.log("error: form data or selected category is invalid");
       }
-      console.log(response);
 
       // Fetch ulang data setelah menambah atau mengedit
-      fetchCategories();
       setShowAdd(false);
       setShowEditModal(false);
     } catch (error) {
-      console.log(error);
+      console.log("Error in submitting form: ", error);
     } finally {
       setLoading(false);
     }

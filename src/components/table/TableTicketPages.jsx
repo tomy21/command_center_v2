@@ -80,22 +80,22 @@ export default function TableTicketPages() {
                 {index + 1}
               </td>
               <td className="text-start text-sm py-2 px-4 border-b border-gray-200">
-                #{data.ticket}
+                #{data.ticket ?? "-"}
               </td>
               <td className="text-start text-sm py-2 px-4 border-b border-gray-200">
-                {data.lokasi}
+                {data.lokasi ?? "-"}
               </td>
               <td className="text-start text-sm py-2 px-4 border-b border-gray-200">
-                {data.category}
+                {data.category ?? "-"}
               </td>
               <td className="text-start text-sm py-2 px-4 border-b border-gray-200">
-                {data.description}
+                {data.description ?? "-"}
               </td>
               <td className="text-start text-sm py-2 px-4 border-b border-gray-200">
-                {data.number_plate}
+                {data.number_plate ?? "-"}
               </td>
               <td className="text-start text-sm py-2 px-4 border-b border-gray-200">
-                {data.createdBy}
+                {data.createdBy ?? "-"}
               </td>
               <td className="text-start text-sm py-2 px-4 border-b border-gray-200">
                 <div

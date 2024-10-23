@@ -111,6 +111,18 @@ export const Issues = {
     }
   },
 
+  summaryPerMonth: async () => {
+    try {
+      const response = await apiClient.get(
+        `/v01/occ/api/issues/getSummaryMonth`
+      );
+      // console.log(response);
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
   create: async (formData) => {
     try {
       const response = await apiClient.post(

@@ -35,11 +35,11 @@ function Login() {
           password: password,
         };
 
-        const response = await users.login(
+        await users.login(
           dataLogin.identifier,
           dataLogin.password
         );
-        console.log(response);
+
         navigate("/dashboard");
         setLoading(false);
       } catch (error) {

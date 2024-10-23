@@ -12,20 +12,31 @@ const ChartBar = () => {
 
   const fetchCategory = async () => {
     try {
-      const response = await Category.getAll();
-      const categories = response.categories.map((item) => item.category);
-      console.log(categories);
-      setListCategory(categories);
-      setChartData(Array(categories.length).fill(100));
+      const response = await Category.summaryDataCategory();
+      if (response && response.data && response.data.length > 0) {
+        const categories = response.data.map(
+          (item) => item?.category || "Unknown"
+        );
+        const categoriesCount = response.data.map(
+          (item) => item?.issueCount || 0
+        );
+        setListCategory(categories);
+        setChartData(categoriesCount);
+      } else {
+        setListCategory([]);
+        setChartData([]);
+      }
     } catch (error) {
       console.log(error);
+      setListCategory([]);
+      setChartData([]);
     }
   };
 
   const [state, setState] = useState({
     series: [
       {
-        data: [800, 100, 300],
+        data: chartData,
       },
     ],
     options: {
@@ -57,7 +68,7 @@ const ChartBar = () => {
         reversed: false,
       },
       fill: {
-        colors: ["#3C50E0"],
+        colors: ["#FFA24C"],
       },
     },
   });

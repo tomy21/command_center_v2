@@ -27,6 +27,7 @@ export default function DashboardLayout() {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [modalConfirmation, setModalConfirmation] = useState(false);
 
   // Handle input changes
   const handleInputChange = (event) => {
@@ -41,6 +42,7 @@ export default function DashboardLayout() {
     event.preventDefault();
     setLoading(true);
     try {
+      // if(selectedCategory === "A")
       const Id = message?.data?.dataIssues?.data?.id;
       await Issues.update(Id, formData);
       closePopup();
@@ -49,6 +51,7 @@ export default function DashboardLayout() {
         description: "",
         status: "",
       });
+      setModalConfirmation(true);
     } catch (error) {
       setIsError(true);
       console.error("Error submitting complaint:", error);
@@ -344,6 +347,31 @@ export default function DashboardLayout() {
             <h2 className="text-xl font-medium mb-4 text-black">
               Error submitting complaint
             </h2>
+          </div>
+        </div>
+      )}
+      {modalConfirmation && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-md p-6 w-full max-w-md shadow-lg flex flex-col justify-center items-center space-y-10">
+            <FaFileCircleXmark className="text-red-500" size={80} />
+            <h2 className="text-xl font-medium mb-4 text-black">
+              Apakah anda ingin membuka palang ?
+            </h2>
+
+            <div className="flex justify-center items-center space-x-5">
+              <button
+                // onClick={handleOpenGate}
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+              >
+                Iya
+              </button>
+              <button
+                // onClick={toggleModalConfirmation}
+                className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+              >
+                Tidak
+              </button>
+            </div>
           </div>
         </div>
       )}

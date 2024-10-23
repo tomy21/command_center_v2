@@ -46,22 +46,29 @@ const Sidebar = ({ isOpen }) => {
 
   return (
     <div
-      className={`fixed top-0 left-0 h-full w-60 bg-blue-900 text-white transition-transform duration-300 ${
+      className={`fixed top-0 left-0 h-full w-60 bg-white shadow-900 text-gray-700 transition-transform duration-300 ${
         isOpen
           ? "translate-x-0 sm:hidden block"
           : "-translate-x-full sm:block hidden"
       } lg:translate-x-0 z-40`}
     >
-      <div className="flex items-center justify-center h-20">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
+      <div className="flex flex-row items-end justify-center h-14 space-x-3">
+        <img src={"/logo.svg"} className="w-12" alt="" />
+        <div className="flex flex-col justify-start items-start">
+          <h1 className="text-base font-semibold">Dashboard</h1>
+          <h1 className="text-sm">Command Center</h1>
+        </div>
       </div>
+      <div className="border-b w-full border-slate-300 my-5"></div>
       <nav className="px-4 py-4 overflow-auto">
         <ul>
           <li className="mb-4">
             <Link
               to="/dashboard"
-              className={`flex items-center px-4 py-2 hover:bg-blue-700 rounded ${
-                location.pathname === "/dashboard" ? "bg-blue-700" : ""
+              className={`flex items-center px-4 py-2 hover:bg-gray-600 hover:text-gray-100 rounded ${
+                location.pathname === "/dashboard"
+                  ? "bg-gray-600 text-gray-100"
+                  : ""
               }`}
             >
               <MdDashboard className="mr-2" /> Dashboard
@@ -70,8 +77,10 @@ const Sidebar = ({ isOpen }) => {
           <li className="mb-4">
             <Link
               to="/dashboard/ticket"
-              className={`flex items-center px-4 py-2 hover:bg-blue-700 rounded ${
-                location.pathname === "/dashboard/ticket" ? "bg-blue-700" : ""
+              className={`flex items-center px-4 py-2 hover:bg-gray-600 hover:text-gray-100 rounded ${
+                location.pathname === "/dashboard/ticket"
+                  ? "bg-gray-600 text-gray-100"
+                  : ""
               }`}
             >
               <MdAssignment className="mr-2" /> Ticket
@@ -80,7 +89,7 @@ const Sidebar = ({ isOpen }) => {
           <li className="mb-4">
             <button
               onClick={toggleMasterMenu}
-              className="flex items-center px-4 py-2 hover:bg-blue-700 rounded w-full text-left"
+              className="flex items-center px-4 py-2 hover:bg-gray-600 hover:text-gray-100 rounded w-full text-left"
             >
               <div className="flex justify-between items-center w-full">
                 <div className="flex flex-row ">
@@ -99,9 +108,9 @@ const Sidebar = ({ isOpen }) => {
                 <li className="mb-2">
                   <Link
                     to="/dashboard/master/category"
-                    className={`flex items-center px-4 py-2 hover:bg-blue-700 rounded ${
+                    className={`flex items-center px-4 py-2 hover:bg-gray-600 hover:text-gray-100 rounded ${
                       location.pathname === "/dashboard/master/category"
-                        ? "bg-blue-700"
+                        ? "bg-gray-600 text-gray-100"
                         : ""
                     }`}
                   >
@@ -111,9 +120,9 @@ const Sidebar = ({ isOpen }) => {
                 <li>
                   <Link
                     to="/dashboard/master/object"
-                    className={`flex items-center px-4 py-2 hover:bg-blue-700 rounded ${
+                    className={`flex items-center px-4 py-2 hover:bg-gray-600 hover:text-gray-100 rounded ${
                       location.pathname === "/dashboard/master/object"
-                        ? "bg-blue-700"
+                        ? "bg-gray-600 text-gray-100"
                         : ""
                     }`}
                   >
@@ -127,8 +136,10 @@ const Sidebar = ({ isOpen }) => {
           <li className="mb-4">
             <Link
               to="/dashboard/lokasi"
-              className={`flex items-center px-4 py-2 hover:bg-blue-700 rounded ${
-                location.pathname === "/dashboard/lokasi" ? "bg-blue-700" : ""
+              className={`flex items-center px-4 py-2 hover:bg-gray-600 hover:text-gray-100 rounded ${
+                location.pathname === "/dashboard/lokasi"
+                  ? "bg-gray-600 text-gray-100"
+                  : ""
               }`}
             >
               <MdLocationPin className="mr-2" /> Lokasi
@@ -137,8 +148,10 @@ const Sidebar = ({ isOpen }) => {
           <li className="mb-4">
             <Link
               to="/dashboard/activity"
-              className={`flex items-center px-4 py-2 hover:bg-blue-700 rounded ${
-                location.pathname === "/dashboard/activity" ? "bg-blue-700" : ""
+              className={`flex items-center px-4 py-2 hover:bg-gray-600 hover:text-gray-100 rounded ${
+                location.pathname === "/dashboard/activity"
+                  ? "bg-gray-600 text-gray-100"
+                  : ""
               }`}
             >
               <PiReadCvLogoBold className="mr-2" /> Activity
@@ -146,7 +159,7 @@ const Sidebar = ({ isOpen }) => {
           </li>
           <li className="mb-4">
             <button
-              className="flex items-center px-4 py-2 hover:bg-blue-700 rounded w-full"
+              className="flex items-center px-4 py-2 hover:bg-gray-600 hover:text-gray-100 rounded w-full"
               onClick={handleLogout}
             >
               <MdLogout className="mr-2" /> Logout

@@ -96,7 +96,7 @@ export default function TableLocation() {
 
   return (
     <>
-      <div className="container mx-auto bg-white rounded-md shadow-md">
+      <div className="bg-white rounded-md shadow-md w-full">
         {/* Search Input */}
         <div className="flex justify-between items-center w-full px-4 py-2">
           <input

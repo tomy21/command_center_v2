@@ -2,13 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { WebSocketContext } from "../components/WebSocketProvider";
+// import { WebSocketContext } from "../components/WebSocketProvider";
 import { getTransaction, Issues } from "../api/apiOcc";
 import { Category, ObjectApi } from "../api/apiMaster"; // Import Issues
 import { FaFileCircleCheck, FaFileCircleXmark } from "react-icons/fa6";
 
 export default function DashboardLayout() {
-  const { message, isOpen, closePopup } = useContext(WebSocketContext);
+  // const { message, isOpen, closePopup } = useContext(WebSocketContext);
   const [formData, setFormData] = useState({
     category: "",
     description: "",
@@ -38,54 +38,54 @@ export default function DashboardLayout() {
     }));
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setLoading(true);
-    try {
-      // if(selectedCategory === "A")
-      const Id = message?.data?.dataIssues?.data?.id;
-      await Issues.update(Id, formData);
-      closePopup();
-      setFormData({
-        category: "",
-        description: "",
-        status: "",
-      });
-      setModalConfirmation(true);
-    } catch (error) {
-      setIsError(true);
-      console.error("Error submitting complaint:", error);
-    } finally {
-      setLoading(true);
-      setIsSuccess(true);
-      setInterval(() => {
-        setIsSuccess(false);
-      }, 2000);
-    }
-  };
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
+  //   setLoading(true);
+  //   try {
+  //     // if(selectedCategory === "A")
+  //     const Id = message?.data?.dataIssues?.data?.id;
+  //     await Issues.update(Id, formData);
+  //     closePopup();
+  //     setFormData({
+  //       category: "",
+  //       description: "",
+  //       status: "",
+  //     });
+  //     setModalConfirmation(true);
+  //   } catch (error) {
+  //     setIsError(true);
+  //     console.error("Error submitting complaint:", error);
+  //   } finally {
+  //     setLoading(true);
+  //     setIsSuccess(true);
+  //     setInterval(() => {
+  //       setIsSuccess(false);
+  //     }, 2000);
+  //   }
+  // };
 
-  useEffect(() => {
-    const fetchImageCCTV = async () => {
-      try {
-        const response = await getTransaction.getFoto(
-          message.data.channel_cctv
-        );
-        const blob = new Blob([response], { type: "image/jpeg" });
-        const imageUrl = URL.createObjectURL(blob);
-        setImageSrc(imageUrl);
-      } catch (error) {
-        console.error("Error fetching CCTV image:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchImageCCTV = async () => {
+  //     try {
+  //       const response = await getTransaction.getFoto(
+  //         message.data.channel_cctv
+  //       );
+  //       const blob = new Blob([response], { type: "image/jpeg" });
+  //       const imageUrl = URL.createObjectURL(blob);
+  //       setImageSrc(imageUrl);
+  //     } catch (error) {
+  //       console.error("Error fetching CCTV image:", error);
+  //     }
+  //   };
 
-    if (message?.data?.channel_cctv) {
-      fetchImageCCTV();
-    }
+  //   if (message?.data?.channel_cctv) {
+  //     fetchImageCCTV();
+  //   }
 
-    // Initial fetch of categories when the component mounts or when search changes
-    fetchCategories();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [message?.data?.channel_cctv, search]);
+  //   // Initial fetch of categories when the component mounts or when search changes
+  //   fetchCategories();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [message?.data?.channel_cctv, search]);
 
   const fetchCategories = async () => {
     if (loading) return;
@@ -161,7 +161,7 @@ export default function DashboardLayout() {
         </div>
       </div>
 
-      {!message ? (
+      {/* {!message ? (
         ""
       ) : (
         <>
@@ -325,7 +325,7 @@ export default function DashboardLayout() {
             </div>
           )}
         </>
-      )}
+      )} */}
 
       {isSuccess && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">

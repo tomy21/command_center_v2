@@ -32,49 +32,49 @@ function ModalAddTicketManual({ isOpen, closePopup }) {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const videoRef = useRef(null);
 
-  useEffect(() => {
-    const videoSrc = "http://localhost:5001/v01/occ/api/stream"; // URL stream yang benar
+  // useEffect(() => {
+  //   const videoSrc = "http://localhost:5001/v01/occ/api/stream"; // URL stream yang benar
 
-    if (Hls.isSupported()) {
-      const hls = new Hls();
+  //   if (Hls.isSupported()) {
+  //     const hls = new Hls();
 
-      // Menangani sumber stream
-      hls.loadSource(videoSrc);
+  //     // Menangani sumber stream
+  //     hls.loadSource(videoSrc);
 
-      // Menghubungkan hls ke elemen video
-      hls.attachMedia(videoRef.current);
+  //     // Menghubungkan hls ke elemen video
+  //     hls.attachMedia(videoRef.current);
 
-      // Mulai pemutaran saat manifest HLS telah dimuat
-      hls.on(Hls.Events.MANIFEST_PARSED, function () {
-        videoRef.current.play();
-      });
+  //     // Mulai pemutaran saat manifest HLS telah dimuat
+  //     hls.on(Hls.Events.MANIFEST_PARSED, function () {
+  //       videoRef.current.play();
+  //     });
 
-      // Menangani error jika ada masalah dengan HLS
-      hls.on(Hls.Events.ERROR, function (event, data) {
-        if (data.fatal) {
-          console.error("HLS error:", data);
-        }
-      });
+  //     // Menangani error jika ada masalah dengan HLS
+  //     hls.on(Hls.Events.ERROR, function (event, data) {
+  //       if (data.fatal) {
+  //         console.error("HLS error:", data);
+  //       }
+  //     });
 
-      // Bersihkan dan lepaskan sumber saat komponen dibersihkan
-      return () => {
-        hls.destroy();
-      };
-    } else if (videoRef.current.canPlayType("application/vnd.apple.mpegurl")) {
-      // Untuk browser yang mendukung HLS secara native (seperti Safari)
-      videoRef.current.src = videoSrc;
-      videoRef.current.addEventListener("loadedmetadata", () => {
-        videoRef.current.play();
-      });
+  //     // Bersihkan dan lepaskan sumber saat komponen dibersihkan
+  //     return () => {
+  //       hls.destroy();
+  //     };
+  //   } else if (videoRef.current.canPlayType("application/vnd.apple.mpegurl")) {
+  //     // Untuk browser yang mendukung HLS secara native (seperti Safari)
+  //     videoRef.current.src = videoSrc;
+  //     videoRef.current.addEventListener("loadedmetadata", () => {
+  //       videoRef.current.play();
+  //     });
 
-      return () => {
-        videoRef.current.removeEventListener("loadedmetadata", () => {});
-      };
-    } else {
-      console.error("HLS not supported in this browser.");
-    }
-    fetchdata();
-  }, []);
+  //     return () => {
+  //       videoRef.current.removeEventListener("loadedmetadata", () => {});
+  //     };
+  //   } else {
+  //     console.error("HLS not supported in this browser.");
+  //   }
+  //   fetchdata();
+  // }, []);
 
   const fetchdata = async () => {
     try {

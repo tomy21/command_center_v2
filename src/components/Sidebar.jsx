@@ -46,13 +46,13 @@ const Sidebar = ({ isOpen }) => {
 
   return (
     <div
-      className={`fixed top-0 left-0 h-full w-60 bg-white shadow-900 text-gray-700 transition-transform duration-300 ${
+      className={`fixed top-0 left-0 h-full w-56 bg-white shadow-900 text-gray-700 transition-transform duration-300 border-r border-slate-300 ${
         isOpen
           ? "translate-x-0 sm:hidden block"
           : "-translate-x-full sm:block hidden"
       } lg:translate-x-0 z-40`}
     >
-      <div className="flex flex-row items-end justify-center h-14 space-x-3">
+      <div className="flex flex-row items-end justify-center h-[3.25rem] space-x-3">
         <img src={"/logo.svg"} className="w-12" alt="" />
         <div className="flex flex-col justify-start items-start">
           <h1 className="text-base font-semibold">Dashboard</h1>

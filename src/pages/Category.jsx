@@ -1,15 +1,12 @@
 import React from "react";
 import TableCategory from "../components/table/TableCategory";
+import TitleHeader from "../components/TitleHeader";
 
 export default function Category() {
   return (
     <>
-      <div className="flex flex-col justify-start items-start w-full mt-12">
-        <div className="flex justify-between items-center w-full mb-5">
-          <h1 className="text-lg font-semibold">Category</h1>
-          <div>2022 Jun 10</div>
-        </div>
-
+      <TitleHeader title={"Category"} />
+      <div className="flex flex-col justify-start items-start w-full mt-3 px-4">
         <TableCategory />
       </div>
     </>

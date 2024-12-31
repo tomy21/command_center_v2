@@ -99,6 +99,7 @@ const ChartBar = () => {
         series={state.series}
         type="bar"
         height={280}
+        width={400}
       />
     </div>
   );

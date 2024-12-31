@@ -6,12 +6,14 @@ export const WebSocketContext = createContext(null);
 export const WebSocketProvider = ({ children }) => {
   const [message, setMessage] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [hasDisplayedPopup, setHasDisplayedPopup] = useState(false);
+  // const [hasDisplayedPopup, setHasDisplayedPopup] = useState(false);
 
   useEffect(() => {
     // Buat koneksi ke server Socket.IO
     // const socket = io("http://localhost:5001"); // Ganti URL sesuai dengan backend
-    const socket = io("https://ws-occ.skyparking.online");
+    const socket = io("https://ws-occ.skyparking.online", {
+      withCredentials: true,
+    });
 
     socket.emit("adminOnline");
 
@@ -23,10 +25,10 @@ export const WebSocketProvider = ({ children }) => {
     // Menerima pesan dari server
     socket.on("gateViewed", (data) => {
       console.log("Message received from server:", data);
-      if (data.data === "gate_Open" && !hasDisplayedPopup) {
+      if (data.data === "gate_Open") {
         setMessage("");
         setIsOpen(false);
-        setHasDisplayedPopup(true);
+        // setHasDisplayedPopup(true);
       } else {
         setMessage(data);
         setIsOpen(true);
@@ -43,13 +45,13 @@ export const WebSocketProvider = ({ children }) => {
       socket.emit("adminOffline");
       socket.disconnect();
     };
-  }, [hasDisplayedPopup]);
+  }, []);
 
   const closePopup = () => {
     setIsOpen(false);
-    setHasDisplayedPopup(false);
+    // setHasDisplayedPopup(false);
   };
-  console.log(hasDisplayedPopup);
+  // console.log(hasDisplayedPopup);
   return (
     <WebSocketContext.Provider value={{ message, isOpen, closePopup }}>
       {children}

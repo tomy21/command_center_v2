@@ -38,6 +38,15 @@ export const Category = {
     }
   },
 
+  summaryData: async () => {
+    try {
+      const response = await apiClient.get(`/v01/occ/api/issues/getSummary`);
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
   updateCategory: async (id, formData) => {
     try {
       const response = await apiClient.put(

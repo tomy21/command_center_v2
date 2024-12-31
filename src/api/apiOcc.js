@@ -88,6 +88,16 @@ export const users = {
     }
   },
 
+  getAllUser: async () => {
+    try {
+      const response = await apiClient.get(`/v01/occ/api/getAllUsers`);
+
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
   logout: async () => {
     try {
       const response = await apiClient.post(`/v01/occ/api/logout`);

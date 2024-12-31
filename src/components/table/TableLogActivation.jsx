@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { MdOutlineEditNote, MdOutlineFileDownload } from "react-icons/md";
 import { loging } from "../../api/apiOcc";
 import moment from "moment";
-import { BsFillTrash3Fill } from "react-icons/bs";
 import Pagination from "../Pagging";
 
 export default function TableLogActivation() {
@@ -16,7 +14,6 @@ export default function TableLogActivation() {
   const fetchLog = async (currentPage = 1) => {
     try {
       const response = await loging.getAll(currentPage, limit);
-      console.log(response);
       setDataLog(response.logs);
       setCurrentPage(parseInt(response.currentPage));
       setTotalPages(response.totalPages);
@@ -30,7 +27,6 @@ export default function TableLogActivation() {
     fetchLog();
   }, []);
 
-  console.log("data", dataLog.activity);
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };

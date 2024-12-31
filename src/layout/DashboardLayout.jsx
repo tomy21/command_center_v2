@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
@@ -63,8 +63,6 @@ export default function DashboardLayout() {
       }, 2000);
     }
   };
-
-  console.log(selectedCategory);
 
   useEffect(() => {
     const fetchImageCCTV = async () => {
@@ -153,11 +151,11 @@ export default function DashboardLayout() {
         <Sidebar isOpen={isSidebarOpen} />
         <div
           className={`flex-1 flex flex-col transition-all duration-300 ${
-            isSidebarOpen ? "sm:ml-0 ml-60" : "ml-0 sm:ml-60"
+            isSidebarOpen ? "sm:ml-0 ml-56" : "ml-0 sm:ml-56"
           }`}
         >
           <Navbar toggleSidebar={toggleSidebar} isOpen={isSidebarOpen} />
-          <div className="p-4 flex-1 overflow-auto">
+          <div className="flex-1 overflow-auto mt-3">
             <Outlet />
           </div>
         </div>

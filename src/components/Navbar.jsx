@@ -7,6 +7,8 @@ export default function Navbar({ toggleSidebar, isOpen }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
+  console.log(isOpen);
+
   useEffect(() => {
     const fetchdata = async () => {
       try {
@@ -22,11 +24,11 @@ export default function Navbar({ toggleSidebar, isOpen }) {
   }, []);
   return (
     <div
-      className={`fixed top-0 ${
-        isOpen ? "md:left-0 sm:left-60" : "sm:left-0 md:left-60"
-      } right-0 bg-white shadow-md z-30 left-0`}
+      className={`fixed top-0 border-b border-slate-300 ${
+        isOpen ? "left-0" : "md:left-56"
+      } right-0 bg-white z-30`}
     >
-      <div className="flex justify-between items-center py-2 mx-4">
+      <div className="flex justify-between items-center py-4 mx-4">
         <TbAlignLeft
           className="text-2xl cursor-pointer"
           onClick={toggleSidebar}

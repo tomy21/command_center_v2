@@ -4,7 +4,6 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const getPageNumbers = () => {
     const pageNumbers = [];
     const maxVisiblePages = 3;
-    console.log(totalPages);
     if (totalPages <= 6) {
       // Show all pages if total pages are 6 or less
       for (let i = 1; i <= totalPages; i++) {

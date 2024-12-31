@@ -1,15 +1,12 @@
 import React from "react";
 import TableDescription from "../components/table/TableDescription";
+import TitleHeader from "../components/TitleHeader";
 
 export default function Object() {
   return (
     <>
-      <div className="flex flex-col justify-start items-start w-full mt-12">
-        <div className="flex justify-between items-center w-full mb-5">
-          <h1 className="text-lg font-semibold">Object</h1>
-          <div>2022 Jun 10</div>
-        </div>
-
+      <TitleHeader title={"Description"} />
+      <div className="flex flex-col justify-start items-start w-full mt-3 px-4">
         <TableDescription />
       </div>
     </>

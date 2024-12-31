@@ -8,3 +8,34 @@ body {
   margin: 0;
   font-family: "Poppins", sans-serif;
 }
+
+.sidebar-option {
+  @apply p-2 cursor-pointer rounded-md hover:bg-gray-100;
+}
+
+.sidebar-option-active {
+  @apply bg-blue-200 text-blue-700;
+}
+
+.button-apply {
+  @apply bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600;
+}
+
+.button-cancel {
+  @apply bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400;
+}
+
+/* Custom Animation for Captcha Box */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Animation for Captcha Refresh Button */

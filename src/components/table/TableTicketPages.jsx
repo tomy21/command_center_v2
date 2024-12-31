@@ -31,7 +31,6 @@ export default function TableTicketPages() {
   const fetchData = async () => {
     try {
       const response = await Issues.getAll(currentPage, limit, searchTerm);
-      console.log(response);
       setTickets(response.data);
       setTotalPages(response.totalPages);
       setTotalResult(response.totalItems);
@@ -147,8 +146,6 @@ export default function TableTicketPages() {
           />
         </div>
       </div>
-
-      <AddTicket isVisible={isModalVisible} onClose={closeModal} />
     </div>
   );
 }

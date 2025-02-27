@@ -10,6 +10,7 @@ import Lokasi from "./pages/Lokasi";
 import { WebSocketProvider } from "./components/WebSocketProvider";
 import ProtectAuth from "./components/ProtectAuth";
 import Activity from "./pages/Activity";
+import LotAvailability from "./pages/LotAvailability";
 
 function App() {
   return (
@@ -18,6 +19,8 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<Login />} />
+            <Route path="/lot-availability" element={<LotAvailability />} />
+
             <Route
               path="/dashboard/*"
               element={

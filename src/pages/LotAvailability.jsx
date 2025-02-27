@@ -64,7 +64,7 @@ export default function LotAvailability() {
               </AnimatePresence>
               <div
                 className={`absolute top-2 right-2 w-4 h-4 rounded-full ${
-                  lot.available_lot < lot.max_lot
+                  lot.available_lot > lot.max_lot
                     ? "bg-green-500"
                     : "bg-red-500"
                 }`}

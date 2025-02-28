@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { lotAvailable } from "../api/apiLot";
 
-const lots = ["B1", "B2", "P5", "P5A", "P6", "P6A", "P7", "P7A", "P8"];
-
 export default function LotAvailability() {
   const [availability, setAvailability] = useState([]);
   const locationCode = "012SK";
@@ -30,7 +28,7 @@ export default function LotAvailability() {
   console.log(availability);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 p-5">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 p-3">
       {/* Fixed Header */}
       <div className="w-full max-w-4xl text-center mb-5">
         <img src={"/lmn.png"} className="w-52 mx-auto mb-3" alt="Logo" />
@@ -64,7 +62,7 @@ export default function LotAvailability() {
               </AnimatePresence>
               <div
                 className={`absolute top-2 right-2 w-4 h-4 rounded-full ${
-                  lot.available_lot > lot.max_lot
+                  lot.max_lot > lot.available_lot
                     ? "bg-green-500"
                     : "bg-red-500"
                 }`}

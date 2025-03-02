@@ -25,24 +25,22 @@ export default function LotAvailability() {
     return () => clearInterval(interval);
   }, []);
 
-  console.log(availability);
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 p-3">
       {/* Fixed Header */}
       <div className="w-full max-w-4xl text-center mb-5">
         <img src={"/lmn.png"} className="w-52 mx-auto mb-3" alt="Logo" />
         <h1 className="text-2xl font-normal text-white">
-          Lot Availability Parking
+          Lot Parking Availability
         </h1>
       </div>
 
       {/* Scrollable Grid */}
       <div className="w-full max-w-4xl max-h-[500px] overflow-y-auto p-2 border border-gray-700 rounded-lg">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
-          {availability.map((lot) => (
+          {availability.map((lot, index) => (
             <div
-              key={lot}
+              key={index}
               className="relative bg-gray-800 p-6 rounded-2xl shadow-lg border-2 border-gray-700 hover:border-yellow-500 transition-all duration-300"
             >
               <h2 className="text-lg font-semibold text-gray-300">
@@ -62,9 +60,7 @@ export default function LotAvailability() {
               </AnimatePresence>
               <div
                 className={`absolute top-2 right-2 w-4 h-4 rounded-full ${
-                  lot.max_lot > lot.available_lot
-                    ? "bg-green-500"
-                    : "bg-red-500"
+                  lot.available_lot > 0 ? "bg-green-500" : "bg-red-500"
                 }`}
               ></div>
             </div>

@@ -65,10 +65,10 @@ export const users = {
     }
   },
 
-  login: async (identifier, password) => {
+  login: async (identidfier, password) => {
     try {
       const response = await apiClient.post(`/v01/occ/api/login`, {
-        identifier,
+        identidfier,
         password,
       });
 

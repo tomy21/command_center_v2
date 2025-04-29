@@ -1,9 +1,9 @@
-version: '3.8'
+version: "3.8"
 
 services:
   app:
-    container_name: 'command_center'
-    build: 
+    container_name: "command_center"
+    build:
       context: .
       dockerfile: ./Dockerfile
     environment:
@@ -16,7 +16,7 @@ services:
     # command: npm install cookie-parser && npm start
     networks:
       - command_center
-    command: ["serve", '-s', "build"]
+    command: ["serve", "-s", "build", "-l", "4002"]
 
 networks:
   command_center:

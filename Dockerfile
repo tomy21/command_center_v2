@@ -1,24 +1,25 @@
 FROM node:20-alpine
 
-# Menetapkan direktori kerja di dalam container
+# Menetapkan direktori kerja
 WORKDIR /app
 
-# Menyalin file package.json dan package-lock.json (atau yarn.lock) ke dalam direktori kerja
-COPY package*.json ./
+# Menyalin file Yarn dan package.json
+COPY package.json yarn.lock ./
 
-# Menginstall dependencies aplikasi
-RUN npm install
+# Menginstall dependencies
+RUN yarn install
 
-# Menyalin sisa file aplikasi ke dalam direktori kerja
+# Menyalin semua source code
 COPY . .
 
-# Membangun aplikasi React untuk produksi
-RUN npm run build
+# Build aplikasi
+RUN yarn build
 
-RUN npm i -g serve
+# Install serve secara global
+RUN yarn global add serve
 
-# Mengekspos port yang akan digunakan
+# Expose port
 EXPOSE 4002
 
-# Menetapkan perintah untuk menjalankan aplikasi di dalam container
-CMD ["serve", "-s", "build"]
+# Jalankan aplikasi
+CMD ["serve", "-s", "build", "-l", "4002"]

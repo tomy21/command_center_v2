@@ -1,14 +1,24 @@
 import React, { useEffect, useState } from "react";
 import Pagination from "../Pagging";
 import { MdOutlineEditNote, MdOutlineFileDownload } from "react-icons/md";
-import { Category } from "../../api/apiMaster";
 import moment from "moment/moment";
 import { BsFillTrash3Fill } from "react-icons/bs";
 import { FaPlus } from "react-icons/fa";
 import Loading from "../Loading";
+import { useCategory } from "../../contexts/Category";
+import { IoTrashOutline } from "react-icons/io5";
 
 export default function TableCategory() {
-  const [categories, setCategories] = useState([]);
+  const {
+    categories,
+    category,
+    getById,
+    createCategory,
+    updateCategory,
+    deleteCategory,
+    fetchCategories,
+  } = useCategory();
+
   const [formData, setFormData] = useState({
     category: "",
   });
@@ -22,6 +32,7 @@ export default function TableCategory() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [editUser, setEditUser] = useState(false);
 
   // Fungsi menangani perubahan input
   const handleChange = (e) => {
@@ -29,9 +40,10 @@ export default function TableCategory() {
   };
 
   const handleEdit = (category) => {
-    setSelectedCategory(category); // Set category yang akan diedit
-    setFormData(category); // Set form data dengan category terpilih
-    setShowEditModal(true); // Tampilkan modal edit
+    setSelectedCategory(category);
+    setEditUser(true);
+    setFormData(category);
+    setShowEditModal(true);
   };
 
   const handleConfirmationDelete = (category) => {
@@ -45,14 +57,27 @@ export default function TableCategory() {
   };
 
   const handleDelete = async () => {
+    setLoading(true);
     try {
-      await Category.delete(selectedCategory.id); // Panggil API delete
-      setCategories((prev) =>
-        prev.filter((item) => item.id !== selectedCategory.id)
-      );
+      if (!selectedCategory || !selectedCategory.id) {
+        console.error("Error: selectedCategory is null or undefined.");
+        return;
+      }
+
+      console.log("Deleting category ID:", selectedCategory.id);
+      await deleteCategory(selectedCategory.id);
+
+      // Ambil ulang data kategori setelah penghapusan berhasil
+      await fetchCategories();
+
       setShowDeleteModal(false);
     } catch (error) {
-      console.error("Error deleting category:", error);
+      console.error(
+        "Error deleting category:",
+        error?.response?.data || error.message
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,49 +85,61 @@ export default function TableCategory() {
     setCurrentPage(page);
   };
 
-  const fetchCategories = async (currentPage = 1, searchTerm = "") => {
-    try {
-      const response = await Category.getAll(currentPage, limit, searchTerm);
-      setCategories(response.categories);
-      setCurrentPage(parseInt(response.currentPage));
-      setTotalPages(response.totalPages);
-      setTotalResult(response.totalItems);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
+  // const fetchCategories = async (currentPage = 1, searchTerm = "") => {
+  //   try {
+  //     const response = await Category.getAll(currentPage, limit, searchTerm);
+  //     setCategories(response.categories);
+  //     setCurrentPage(parseInt(response.currentPage));
+  //     setTotalPages(response.totalPages);
+  //     setTotalResult(response.totalItems);
+  //   } catch (error) {
+  //     console.error("Error fetching categories:", error);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchCategories();
-  }, [searchTerm, currentPage, limit]);
+  // useEffect(() => {
+  //   fetchCategories();
+  // }, [searchTerm, currentPage, limit]);
 
   const submitForm = async () => {
-    setLoading(true);
     try {
-      // Pastikan selectedCategory dan formData tidak null atau undefined
-      console.log(selectedCategory);
-      if (selectedCategory && formData && formData.id && formData.category) {
-        const response = await Category.updateCategory(
-          formData.id,
-          formData.category
-        );
+      setLoading(true);
+      // Jika semua data valid, jalankan updateCategory
+      if (editUser) {
+        if (!selectedCategory) {
+          console.error("Error: selectedCategory is undefined or null");
+          return;
+        }
+
+        if (!formData || !formData.id || !formData.category) {
+          console.error("Error: formData is invalid", formData);
+          return;
+        }
+
+        await updateCategory(selectedCategory.id, formData);
+        setEditUser(false);
       } else {
-        console.log("error: form data or selected category is invalid");
+        await createCategory(formData);
+        setFormData("");
       }
 
-      // Fetch ulang data setelah menambah atau mengedit
+      // Refresh data setelah update
       setShowAdd(false);
       setShowEditModal(false);
+      fetchCategories();
     } catch (error) {
-      console.log("Error in submitting form: ", error);
+      console.error("Error in submitting form:", error);
     } finally {
       setLoading(false);
+      fetchCategories();
     }
   };
 
   if (loading) {
     return <Loading />;
   }
+
+  // console.log(categories);
 
   return (
     <>
@@ -150,14 +187,14 @@ export default function TableCategory() {
             </tr>
           </thead>
           <tbody>
-            {categories.length === 0 ? (
+            {(categories?.categories || []).length === 0 ? (
               <tr>
                 <td colSpan="4" className="text-center py-4">
                   Data not found
                 </td>
               </tr>
             ) : (
-              categories.map((item, index) => (
+              (categories?.categories || []).map((item, index) => (
                 <tr
                   key={index}
                   className={index % 2 === 0 ? "bg-white" : "bg-gray-100"}
@@ -292,11 +329,14 @@ export default function TableCategory() {
       {showDeleteModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white rounded-md p-6 w-full max-w-md shadow-lg">
-            <h2 className="text-xl font-bold mb-4 text-red-600">
-              Delete Confirmation
-            </h2>
-            <p>Are you sure you want to delete this category?</p>
-            <div className="flex justify-end space-x-2 mt-4">
+            <div className="flex justify-center items-center w-full flex-col">
+              <IoTrashOutline size={80} className="text-red-400 mb-4" />
+              <h2 className="text-xl font-bold mb-4 text-red-600">
+                Delete Confirmation
+              </h2>
+              <p>Are you sure you want to delete this category?</p>
+            </div>
+            <div className="flex justify-end space-x-2 mt-7 border-t pt-4">
               <button
                 className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
                 onClick={() => setShowDeleteModal(false)}

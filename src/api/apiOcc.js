@@ -33,7 +33,7 @@ export const getTransaction = {
       const response = await apiClient.put(`/v01/occ/api/gates/${id}`, {
         arduino: arduino,
       });
-      return response.data;
+      return response;
     } catch (error) {
       throw error.response.data;
     }
@@ -173,6 +173,93 @@ export const loging = {
       return response.data;
     } catch (error) {
       throw error.response.data;
+    }
+  },
+};
+
+export const location = {
+  getAllLocation: async (page, limit, search) => {
+    try {
+      const response = await apiClient.get(
+        "/v01/occ/api/location-occ/get-all",
+        {
+          params: {
+            page,
+            limit,
+            search,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  },
+  getAllLoc: async (page, limit, search) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/occ/api/location-occ/get-all-status`,
+        {
+          params: {
+            page,
+            limit,
+            search,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  },
+  getGateByLocation: async (idLoc) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/occ/api/gates/getGateBylocation/${idLoc}`
+      );
+
+      return response.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  },
+  updateLocationActive: async (idLoc, recordStatus) => {
+    try {
+      const response = await apiClient.put(
+        `/v01/occ/api/location-occ/update-data/${idLoc}`,
+        {
+          recordStatus,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  },
+  addGate: async (formData) => {
+    try {
+      const response = await apiClient.post(`/v01/occ/api/gates/create-data`, {
+        formData,
+      });
+
+      return response.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  },
+
+  getCCTV: async (idCCTV) => {
+    try {
+      const response = await apiClient.post(
+        `/v01/occ/api/cctv/lokasi/${idCCTV}`
+      );
+
+      return response.data;
+    } catch (error) {
+      return error.response.data;
     }
   },
 };

@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { getTransaction } from "../../api/apiOcc";
+import { getTransaction, location } from "../../api/apiOcc";
 import Pagination from "../Pagging";
 import { MdOutlineAddLocationAlt, MdOutlineFileDownload } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import { BsArrowBarLeft } from "react-icons/bs";
+import ModalAddLocation from "../modal/ModalAddLocation";
+import AddModalGate from "../modal/AddModalGate";
 
-export default function TableLocation() {
+export default function TableLocation({ locationId }) {
   const [gates, setGates] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -12,6 +16,9 @@ export default function TableLocation() {
   const [totalResult, setTotalResult] = useState(10);
   const [loadingGateId, setLoadingGateId] = useState(null);
   const [loadingPostId, setLoadingPostId] = useState(null);
+  const [modalAddLocation, setModalAddLocation] = useState(false);
+  const [getStatus, setGetStatus] = useState(false);
+  const navigate = useNavigate();
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -20,6 +27,10 @@ export default function TableLocation() {
   // Pagination handler
   const handlePageChange = (page) => {
     setCurrentPage(page);
+  };
+
+  const handleBack = (id) => {
+    navigate(`/dashboard/lokasi`);
   };
 
   const toggleStatus = async (gateId, newStatus) => {
@@ -50,48 +61,59 @@ export default function TableLocation() {
   };
 
   const updateOpenGate = async (gateId, newStatus) => {
-    setLoadingGateId(gateId); // Set the current gate ID to loading
+    setLoadingGateId(gateId); // Set button ke loading
+
     try {
       const response = await getTransaction.updateStatusOpenGate(
         gateId,
         newStatus
       );
 
-      setTimeout(() => {
-        if (response.status === 200) {
-          setLoadingGateId(null); // Reset the loading state after the update
-        } else {
-          setLoadingGateId(null); // Reset loading if response status is not 200
+      if (response.status === 200) {
+        setGates((prevGates) =>
+          prevGates.map((gate) =>
+            gate.id === gateId ? { ...gate, arduino: newStatus } : gate
+          )
+        );
+
+        if (newStatus === "1") {
+          // Jika status baru "1" (Open), tunggu 3 detik lalu set kembali ke "0" (Close)
+          setTimeout(async () => {
+            await getTransaction.updateStatusOpenGate(gateId, "0");
+            fetchGates(); // Fetch ulang untuk memastikan status terbaru
+          }, 3000);
         }
-      }, 2000);
-      fetchGates();
+      }
     } catch (error) {
       console.error("Error updating gate status:", error);
-      setLoadingGateId(null); // Reset loading if there is an error
+    } finally {
+      setTimeout(() => {
+        setLoadingGateId(null);
+      }, 2000);
     }
   };
 
   // UseEffect to fetch data initially
   useEffect(() => {
     fetchGates();
-  }, [searchTerm, currentPage, limit]);
+  }, [searchTerm, currentPage, limit, locationId, getStatus]);
 
   const fetchGates = async (page = 1, search = "") => {
     try {
-      const response = await getTransaction.getGate(
-        currentPage,
-        limit,
-        searchTerm
-      );
-      console.log(response);
-      setLimit(response.data.pagination.limit);
-      setGates(response.data.data);
-      setCurrentPage(response.data.pagination.page);
-      setTotalPages(response.data.pagination.totalPages);
-      setTotalResult(response.data.pagination.total);
+      const response = await location.getGateByLocation(locationId);
+      setLimit(response.pagination.perPage);
+      setGates(response.data);
+      setCurrentPage(response.pagination.page);
+      setTotalPages(response.pagination.totalPages);
+      setTotalResult(response.pagination.total);
     } catch (error) {
       console.error("Error fetching gates:", error);
     }
+  };
+
+  const handleCloseModal = () => {
+    setModalAddLocation(false);
+    fetchGates();
   };
 
   return (
@@ -107,11 +129,21 @@ export default function TableLocation() {
             className="p-2 border border-gray-300 rounded-md"
           />
           <div className="flex flex-row justify-end items-center space-x-5">
-            <div className="flex flex-row justify-center items-center rounded-md border border-emerald-500 text-emerald-500 px-3 py-1 space-x-2 hover:bg-emerald-100 cursor-pointer shadow-sm shadow-emerald-700">
+            <div
+              onClick={handleBack}
+              className="flex flex-row justify-center items-center rounded-md border border-red-500 text-red-500 px-3 py-1 space-x-2 hover:bg-red-100 cursor-pointer shadow-sm shadow-emerald-700"
+            >
+              <BsArrowBarLeft />
+              <h1>Back</h1>
+            </div>
+            {/* <div className="flex flex-row justify-center items-center rounded-md border border-emerald-500 text-emerald-500 px-3 py-1 space-x-2 hover:bg-emerald-100 cursor-pointer shadow-sm shadow-emerald-700">
               <MdOutlineFileDownload />
               <h1>Export</h1>
-            </div>
-            <div className="flex flex-row justify-center items-center rounded-md border border-blue-500 text-blue-500 px-3 py-1 space-x-2 hover:bg-blue-100 cursor-pointer shadow-sm shadow-blue-700 ">
+            </div> */}
+            <div
+              onClick={() => setModalAddLocation(true)}
+              className="flex flex-row justify-center items-center rounded-md border border-blue-500 text-blue-500 px-3 py-1 space-x-2 hover:bg-blue-100 cursor-pointer shadow-sm shadow-blue-700 "
+            >
               <MdOutlineAddLocationAlt />
               <h1>Add New</h1>
             </div>
@@ -139,9 +171,9 @@ export default function TableLocation() {
               <th className="text-start py-2 px-4 border-b text-slate-400 text-sm font-medium">
                 Status Gate
               </th>
-              <th className="text-start py-2 px-4 border-b text-slate-400 text-sm font-medium">
+              {/* <th className="text-start py-2 px-4 border-b text-slate-400 text-sm font-medium">
                 Status POST
-              </th>
+              </th> */}
             </tr>
           </thead>
           <tbody>
@@ -166,7 +198,7 @@ export default function TableLocation() {
                   {loadingGateId === gate.id ? (
                     <div className="flex items-start justify-start">
                       <svg
-                        className="animate-spin h-5 w-5 mr-2 text-blue-500 text-start"
+                        className="animate-spin h-5 w-5 mr-2 text-blue-500"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -195,77 +227,12 @@ export default function TableLocation() {
                       }`}
                       onClick={() => {
                         const newStatus = gate.arduino === "1" ? "0" : "1"; // Toggle status
-                        updateOpenGate(gate.id, newStatus); // Call update function with new status
+                        updateOpenGate(gate.id, newStatus);
                       }}
                     >
                       {gate.arduino === "1" ? "Open" : "Close"}
                     </button>
                   )}
-                </td>
-                <td className="py-3 px-4 border-b border-gray-200 text-gray-700">
-                  <div className="flex items-center">
-                    {loadingPostId === gate.id ? (
-                      <div className="flex items-start justify-start">
-                        <svg
-                          className="animate-spin h-5 w-5 mr-2 text-blue-500"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                          ></path>
-                        </svg>
-                      </div>
-                    ) : (
-                      <>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            className="sr-only"
-                            checked={gate.statusGate === "1"}
-                            onChange={() =>
-                              toggleStatus(gate.id, gate.statusGate !== "1")
-                            }
-                          />
-                          <div
-                            className={`w-11 h-6 rounded-full p-1 transition duration-200 ease-in-out ${
-                              gate.statusGate === "1"
-                                ? "bg-emerald-500"
-                                : "bg-red-300"
-                            }`}
-                          >
-                            <div
-                              className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
-                                gate.statusGate === "1"
-                                  ? "translate-x-5"
-                                  : "translate-x-0"
-                              }`}
-                            ></div>
-                          </div>
-                        </label>
-                        <span
-                          className={`ml-2 ${
-                            gate.statusGate === "1"
-                              ? "text-emerald-700"
-                              : "text-red-700"
-                          }`}
-                        >
-                          {gate.statusGate === "1" ? "On" : "Off"}
-                        </span>
-                      </>
-                    )}
-                  </div>
                 </td>
               </tr>
             ))}
@@ -306,6 +273,14 @@ export default function TableLocation() {
           </div>
         </div>
       </div>
+
+      {modalAddLocation && (
+        <AddModalGate
+          isOpen={modalAddLocation}
+          onClose={handleCloseModal}
+          idParams={locationId}
+        />
+      )}
     </>
   );
 }

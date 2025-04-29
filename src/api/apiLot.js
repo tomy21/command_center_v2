@@ -1,4 +1,4 @@
-import { apiClient, apiLot } from "./apiClient";
+import { apiClient, apiLot, apiLot_v2 } from "./apiClient";
 
 export const lotAvailable = {
   getAllPerlocation: async (locationCode) => {
@@ -35,6 +35,60 @@ export const lotAvailable = {
       return response.data;
     } catch (error) {
       throw error.response.data;
+    }
+  },
+};
+
+export const LotAPI_new = {
+  signatureGenerate: async () => {
+    try {
+      const timestamp = new Date().toISOString();
+
+      const response = await apiLot_v2.post(
+        `/v1/partner/generate-signature`,
+        null,
+        {
+          headers: {
+            clientkey: process.env.REACT_APP_API_CLIENT_KEY,
+            secretkey: process.env.REACT_APP_API_SECRET_KEY,
+            timestamp: timestamp,
+          },
+        }
+      );
+      console.log("Signature API response:", response.data);
+      return {
+        signature: response.data?.signature,
+        timestamp,
+      };
+    } catch (error) {
+      throw error?.response?.data || error;
+    }
+  },
+
+  // Step 2: Hit realtime/location-availability
+  getLocationAvailability: async (locationCode) => {
+    try {
+      const { signature, timestamp } = await LotAPI_new.signatureGenerate();
+      console.log("Headers:", {
+        signature,
+      });
+      const response = await apiLot_v2.post(
+        `/v1/realtime/location-availability`,
+        {
+          locationCode,
+        }, // Sesuaikan jika ada body
+        {
+          headers: {
+            clientkey: process.env.REACT_APP_API_CLIENT_KEY,
+            signature: signature,
+            timestamp: timestamp,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      throw error?.response?.data || error;
     }
   },
 };

@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Issues, users } from "../../api/apiOcc";
+import { Issues, location, users } from "../../api/apiOcc";
 import Select from "react-select";
-import Hls from "hls.js";
+import CCTVStream from "../CCTVStream";
+import { useCategory } from "../../contexts/Category";
 
 function ModalAddTicketManual({ isOpen, closePopup }) {
   const [loading, setLoading] = useState(false);
@@ -17,36 +18,68 @@ function ModalAddTicketManual({ isOpen, closePopup }) {
     status: "",
   });
   const [locationData, setLocationData] = useState("");
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [stopStream, setStopStream] = useState(false);
+  const {
+    categories,
+    category,
+    getById,
+    createCategory,
+    updateCategory,
+    deleteCategory,
+    fetchCategories,
+  } = useCategory();
 
   const [gate, setGate] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalResult, setTotalResult] = useState(10);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedIdGate, setSelectedIdGate] = useState("");
   const [modalConfirmation, setModalConfirmation] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [categories, setCategories] = useState([]);
   const [description, setDescription] = useState([]);
   const [limitCategory] = useState(3);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [idLokasi, setIdLokasi] = useState(null);
   const videoRef = useRef(null);
 
   useEffect(() => {
     fetchdata();
-  }, []);
+    fetchGates();
+  }, [idLokasi, stopStream]);
+
+  console.log(categories);
 
   const fetchdata = async () => {
     try {
       const response = await users.getById();
-      console.log(response);
+      console.log(response.data.id_lokasi);
+      setIdLokasi(response.data.id_lokasi);
       setLocationData(response.data?.OccRefLocation?.name);
     } catch (error) {
       console.log(error);
     }
   };
 
-  console.log(locationData);
+  const fetchGates = async (page = 1, search = "") => {
+    try {
+      const response = await location.getGateByLocation(idLokasi);
+      setLimit(response.pagination.perPage);
+      setGate(response.data);
+      setCurrentPage(response.pagination.page);
+      setTotalPages(response.pagination.totalPages);
+      setTotalResult(response.pagination.total);
+    } catch (error) {
+      console.error("Error fetching gates:", error);
+    }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -71,6 +104,13 @@ function ModalAddTicketManual({ isOpen, closePopup }) {
         setIsSuccess(false);
       }, 2000);
     }
+  };
+
+  const handleClose = () => {
+    setStopStream(true); // Hentikan streaming
+    setIsStreaming(false);
+    setTimeout(() => setSelectedIdGate(""), 100);
+    closePopup();
   };
 
   const toggleDropdown = () => {
@@ -130,16 +170,19 @@ function ModalAddTicketManual({ isOpen, closePopup }) {
               <Select
                 options={gate.map((item) => ({
                   label: item.gate,
-                  value: item.id,
+                  value: item.channel_cctv,
                 }))}
-                onChange={(selectedOption) => console.log(selectedOption)}
+                onChange={(selectedOption) => {
+                  setSelectedIdGate(selectedOption.value);
+                  setIsStreaming(true);
+                }}
                 className="w-full mt-2"
                 classNamePrefix="react-select"
                 placeholder="Select Gate"
               />
             </div>
             <button
-              onClick={closePopup}
+              onClick={handleClose}
               className="text-gray-500 hover:text-gray-700 text-xl"
             >
               X
@@ -148,13 +191,18 @@ function ModalAddTicketManual({ isOpen, closePopup }) {
 
           <div className="border-b border-slate-300 w-full p-0"></div>
 
-          <video
-            ref={videoRef}
-            controls
-            width="100%"
-            height="auto"
-            style={{ backgroundColor: "black" }}
-          ></video>
+          {selectedIdGate.length === 0 ? (
+            <div className="flex flex-col justify-center items-center h-80">
+              <img
+                src={"/assets/no-video.svg"}
+                className="h-1/2 w-1/2"
+                alt="no-video"
+              />
+              <p className="text-slate-400">Please Select Gate</p>
+            </div>
+          ) : (
+            <CCTVStream cctvId={selectedIdGate} stopStream={stopStream} />
+          )}
 
           <div className="grid grid-cols-2 gap-4 text-start px-4 py-2">
             <div>
@@ -183,14 +231,16 @@ function ModalAddTicketManual({ isOpen, closePopup }) {
                   Category Complain:
                 </label>
                 <Select
-                  options={categories.map((item) => ({
-                    label: item.category,
-                    value: item.id,
-                  }))}
+                  options={
+                    categories &&
+                    categories.categories.map((item) => ({
+                      label: item.category,
+                      value: item.id,
+                    }))
+                  }
                   value={selectedCategory}
                   onChange={(selectedOption) => {
                     setSearch("");
-                    setCategories([]);
                     setPage(1);
                     handleInputChange({
                       target: { name: "category", value: selectedOption.value },

@@ -13,6 +13,7 @@ function TitleHeader({ title }) {
   };
   const closeModal = () => {
     setIsModalVisible(false);
+    window.location.reload();
   };
 
   return (

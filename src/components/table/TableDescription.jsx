@@ -1,23 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { ObjectApi, Category } from "../../api/apiMaster";
 import Pagination from "../Pagging";
-import {
-  MdOutlineAddLocationAlt,
-  MdOutlineEditNote,
-  MdOutlineFileDownload,
-} from "react-icons/md";
+import { MdOutlineEditNote, MdOutlineFileDownload } from "react-icons/md";
 import { BsFillTrash3Fill } from "react-icons/bs";
 import Loading from "../Loading";
 import moment from "moment/moment";
 import { FaPlus } from "react-icons/fa";
+import { useObject } from "../../contexts/Object.js";
 
 export default function TableObject() {
-  const [objects, setObjects] = useState([]);
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
     id_category: "",
     object: "",
   });
+  const {
+    objects,
+    object,
+    getById,
+    createObject,
+    updateObject,
+    deleteObject,
+    fetchObjects,
+  } = useObject();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -28,7 +34,7 @@ export default function TableObject() {
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
-    setCurrentPage(1); // Reset to page 1 when search term changes
+    setCurrentPage(1);
   };
 
   const handlePageChange = (newPage) => {
@@ -50,23 +56,7 @@ export default function TableObject() {
     });
     setShowAdd(true);
   };
-
-  // Fetch data with pagination and search term
-  const fetchGates = async (page = 1, search = "") => {
-    setLoading(true);
-    try {
-      const response = await ObjectApi.getAll(page, limit, search);
-      setObjects(response.objects);
-      setCurrentPage(parseInt(response.currentPage));
-      setTotalPages(response.totalPages);
-      setTotalResult(response.totalItems);
-    } catch (error) {
-      console.error("Error fetching objects:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  console.log("object", objects);
   // Fetch categories
   const fetchCategories = async () => {
     try {
@@ -78,7 +68,7 @@ export default function TableObject() {
   };
 
   useEffect(() => {
-    fetchGates(currentPage, searchTerm);
+    // fetchGates(currentPage, searchTerm);
     fetchCategories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, currentPage, limit]);
@@ -87,8 +77,8 @@ export default function TableObject() {
     setLoading(true);
     try {
       await ObjectApi.create(formData);
-      setShowAdd(false); // Close modal after successful submit
-      fetchGates(currentPage); // Refresh the list
+      setShowAdd(false);
+      // fetchGates(currentPage); // Refresh the list
     } catch (error) {
       console.error("Error submitting form:", error);
     } finally {

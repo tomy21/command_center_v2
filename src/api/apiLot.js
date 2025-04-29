@@ -55,7 +55,6 @@ export const LotAPI_new = {
           },
         }
       );
-      console.log("Signature API response:", response.data);
       return {
         signature: response.data?.signature,
         timestamp,
@@ -69,9 +68,7 @@ export const LotAPI_new = {
   getLocationAvailability: async (locationCode) => {
     try {
       const { signature, timestamp } = await LotAPI_new.signatureGenerate();
-      console.log("Headers:", {
-        signature,
-      });
+
       const response = await apiLot_v2.post(
         `/v1/realtime/location-availability`,
         {

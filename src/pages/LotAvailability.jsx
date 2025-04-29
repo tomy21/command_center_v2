@@ -13,7 +13,7 @@ export default function LotAvailability() {
     const fetchLots = async () => {
       try {
         const response = await LotAPI_new.getLocationAvailability(locationCode);
-        console.log(response);
+
         if (response.responseCode === "211000") {
           setAvailability(response.data[0]?.lots);
         }
@@ -27,7 +27,6 @@ export default function LotAvailability() {
     return () => clearInterval(interval);
   }, [locationId]);
 
-  console.log("avaibility", availability);
   return (
     <>
       {isLoading && (

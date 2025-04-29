@@ -22,4 +22,4 @@ RUN yarn global add serve
 EXPOSE 4002
 
 # Jalankan aplikasi
-CMD ["serve", "-s", "build"]
+CMD ["yarn", "start"]

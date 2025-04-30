@@ -7,8 +7,8 @@ export const apiClient = axios.create({
 });
 
 export const apiLot_v2 = axios.create({
-  baseURL: process.env.REACT_APP_API_URL_DEV_LOT,
-  // baseURL: "https://ws-occ.skyparking.online",
+  // baseURL: process.env.REACT_APP_API_URL_DEV_LOT,
+  baseURL: "https://devintegrationv2.skyparking.online",
   withCredentials: true,
 });
 

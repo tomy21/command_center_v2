@@ -49,8 +49,8 @@ export const LotAPI_new = {
         null,
         {
           headers: {
-            clientkey: process.env.REACT_APP_API_CLIENT_KEY,
-            secretkey: process.env.REACT_APP_API_SECRET_KEY,
+            clientkey: "4fc9d5ce-7b1e-477b-aac0-a60e43755552",
+            secretkey: "c84fd876-6d53-4e75-bd69-622ed7e6a404",
             timestamp: timestamp,
           },
         }
@@ -76,7 +76,7 @@ export const LotAPI_new = {
         }, // Sesuaikan jika ada body
         {
           headers: {
-            clientkey: process.env.REACT_APP_API_CLIENT_KEY,
+            clientkey: "4fc9d5ce-7b1e-477b-aac0-a60e43755552",
             signature: signature,
             timestamp: timestamp,
           },

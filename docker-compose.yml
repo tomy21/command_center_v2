@@ -16,7 +16,7 @@ services:
     # command: npm install cookie-parser && npm start
     networks:
       - command_center
-    command: ["serve", "start"]
+    command: ["yarn", "start"]
 
 networks:
   command_center:

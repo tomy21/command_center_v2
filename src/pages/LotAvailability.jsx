@@ -27,6 +27,7 @@ export default function LotAvailability() {
     return () => clearInterval(interval);
   }, [locationId]);
 
+  console.log(availability);
   return (
     <>
       {isLoading && (
@@ -63,6 +64,7 @@ export default function LotAvailability() {
                   className="text-3xl font-bold text-white block mt-2"
                 >
                   {lot.available_lot < 0 ? 0 : lot.available_lot}
+                  <span className="text-sm font-light"> / {lot.max_lot}</span>
                 </motion.span>
                 <div
                   className={`absolute top-2 right-2 w-4 h-4 rounded-full ${

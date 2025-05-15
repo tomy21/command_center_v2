@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export const apiClient = axios.create({
-  baseURL: process.env.REACT_APP_API_URL_DEV,
-  // baseURL: "https://ws-occ.skyparking.online",
+  // baseURL: process.env.REACT_APP_API_URL_DEV,
+  baseURL: "https://ws-occ.skyparking.online",
   withCredentials: true,
 });
 
